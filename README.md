@@ -1,5 +1,5 @@
-TutCheck
-========
+TutCheck (server edition)
+=========================
 
 ## Summary
 
