@@ -33,7 +33,7 @@ def alert():
 	        s.play()
 	        sleep(3)
 
-def zeit(sec):
+def time(sec):
 	if float(sec) < 10:
 		sec1 = "0"+str(sec)
 	else:
@@ -70,9 +70,9 @@ print "Original website has been cached for comparison."
 
 while True:
 	time = localtime()
-	sec = zeit(time[5])
-	hour = zeit(time[3])
-	minute = zeit(time[4])
+	sec = time(time[5])
+	hour = time(time[3])
+	minute = time(time[4])
 	loct = hour+":"+minute+":"+sec
 
 	g = urllib.urlopen(url)
