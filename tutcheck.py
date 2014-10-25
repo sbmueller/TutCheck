@@ -16,24 +16,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-from AppKit import NSSound
-from time import sleep
+from time import localtime, sleep
+import smtplib
 
-def alert():
-	class sound:
-	    def __init__(self, file):
-	        self._sound = NSSound.alloc()
-	        self._sound.initWithContentsOfFile_byReference_(file, True)
-	    def play(self): self._sound.play()
-	    def stop(self): self._sound.stop()
-	    def is_playing(self): return self._sound.isPlaying()
 
-	for i in range(100):
-	        s = sound("hurricane_ton3.wav")
-	        s.play()
-	        sleep(3)
+def alert(time,url):
+	to = 'me@mail.com'   
+	gmail_user = ''   
+	gmail_pwd = '' 
+	smtpserver = smtplib.SMTP("",587) 
+	smtpserver.ehlo() 
+	smtpserver.starttls() 
+	smtpserver.ehlo 
+	smtpserver.login(gmail_user, gmail_pwd) 
+	header = 'To:' + to + '\n' + 'From: TutCheck Notifier <' + gmail_user + '>\n' + 'Subject: Website has changed\n' + 'Content-Type: text/html \n' 
+	#print header 
+	stylesheet = '<style type="text/css">body { font-family: Verdana; font-size: 11px; } a { text-decoration: none; color: grey } #footer { color:grey; } a:hover { color: orange; }</style>' 
+	
+	msg = header + '\n' + stylesheet + '\n A website has changed @'+time+'!<br>\nUrl: '+url 
+	smtpserver.sendmail(gmail_user, to, msg) 
+	print 'Mail sent.' 
+	smtpserver.close()
 
-def zeit(sec):
+	exit()
+
+def time(sec):
 	if float(sec) < 10:
 		sec1 = "0"+str(sec)
 	else:
@@ -41,38 +48,18 @@ def zeit(sec):
 
 	return sec1
 
-from time import localtime, sleep
-
-print "*** TutCheck by Sebastian Müller ***"
-useold = raw_input("Use last website for comparison? (Y/N) ")
-if useold == "Y":
-	d = open("orig.html", "r")
-	orig = d.read()
-	d.close()
-	d = open("url.txt", "r")
-	url = d.read()
-	d.close()
-else:
-	url = raw_input("Target URL: ")
-	print "URL:", url
-	f = urllib.urlopen(url)
-	orig = f.read()
-	f.close()
-	d = open("orig.html", "w")
-	d.write(orig)
-	d.close
-  	d = open("url.txt", "w")
-	d.write(url)
-	d.close
-
-
-print "Original website has been cached for comparison."
+d = open("orig.txt", "r")
+orig = d.read()
+d.close()
+d = open("url.txt", "r")
+url = d.read()
+d.close()
 
 while True:
 	time = localtime()
-	sec = zeit(time[5])
-	hour = zeit(time[3])
-	minute = zeit(time[4])
+	sec = time(time[5])
+	hour = time(time[3])
+	minute = time(time[4])
 	loct = hour+":"+minute+":"+sec
 
 	g = urllib.urlopen(url)
@@ -80,8 +67,7 @@ while True:
 	g.close()
 
 	if comp != orig:
-		print loct, "!ALERT! Website has changed !ALERT!"
-		alert()
+		print loct+": Website changed!"
+		alert(loct,url)
 	else:
-		print loct, "No changes yet"
-
+		print loct+": No changes yet."
